@@ -1,0 +1,10 @@
+/* courses-styles.module.css */
+.listGroupItem {
+  background-color: #f8f9fa;
+  margin-bottom: 10px;
+}
+
+.listGroupItemBtn {
+  margin-top: 5px;
+  margin-right: 5px;
+}
