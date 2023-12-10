@@ -1,42 +1,41 @@
 // Courses.js
 import React, { useState, useEffect } from 'react';
-import courseService from '../services/courseService';
+import courseService from '@/services/courseService';
 import { useRouter } from 'next/router';
 import { Container, ListGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { TOKEN } from '@/constants';
 
-const Courses = () => {
+const All = () => {
   const router = useRouter();
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     async function fetchCourses() {
       try {
-        const allCourses = await courseService.getAllCourses();
+        const allCourses = await courseService.getAllCourses(TOKEN);
         setCourses(allCourses);
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
     }
-
     fetchCourses();
   }, []);
 
-  const handleUpdate = (course) => {
+  const handleUpdate = (courseId) => {
     router.push({
-      pathname: `/update-course/${course.id}`,
-      query: { course: JSON.stringify(course) },
+      pathname: '/course/update',
+      query: { courseId },
     });
-  };
+  }
 
   const handleDelete = async (courseId) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this course?');
     if (confirmDelete) {
       try {
-        await courseService.deleteCourse(courseId);
+        await courseService.deleteCourse(courseId, TOKEN);
         const updatedCourses = courses.filter((course) => course.id !== courseId);
         setCourses(updatedCourses);
-        console.log(`Course with ID ${courseId} deleted successfully.`);
       } catch (error) {
         console.error('Error deleting course:', error);
       }
@@ -58,7 +57,7 @@ const Courses = () => {
               <br />
               <strong>Description:</strong> {course.description}
               <div className="mt-4">
-                <Button variant="primary" onClick={() => handleUpdate(course)}>
+                <Button variant="primary" onClick={() => handleUpdate(course.id)}>
                   Update
                 </Button>{' '}
                 <Button variant="danger" onClick={() => handleDelete(course.id)}>
@@ -73,4 +72,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default All;

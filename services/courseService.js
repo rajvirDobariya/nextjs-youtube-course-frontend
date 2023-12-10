@@ -1,12 +1,14 @@
 import axios from 'axios';
-
-// Backend Base URL
-const BASE_URL = 'http://localhost:8080'; 
+import { BASE_URL } from '@/constants'
 
 const courseService = {
-  getAllCourses: async () => {
+  getAllCourses: async (token) => {
     try {
-      const response = await axios.get(`${BASE_URL}/courses`);
+      const response = await axios.get(`${BASE_URL}/courses`, {
+        headers: {
+          Authorization: token,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -14,9 +16,27 @@ const courseService = {
     }
   },
 
-  addCourse: async (newCourse) => {
+  getCourseById: async (courseId, token) => {
+
     try {
-      const response = await axios.post(`${BASE_URL}/courses`, newCourse);
+      const response = await axios.get(`${BASE_URL}/courses/${courseId}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching course with ID ${courseId}:`, error);
+      throw new Error('Failed to fetch course');
+    }
+  },
+  addCourse: async (newCourse, token) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/courses`, newCourse, {
+        headers: {
+          Authorization: token,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error adding course:', error);
@@ -24,9 +44,13 @@ const courseService = {
     }
   },
 
-  updateCourse: async (courseId, updatedCourse) => {
+  updateCourse: async (updatedCourse, token) => {
     try {
-      const response = await axios.put(`${BASE_URL}/courses/${courseId}`, updatedCourse);
+      const response = await axios.put(`${BASE_URL}/courses/${updatedCourse.id}`, updatedCourse, {
+        headers: {
+          Authorization: token,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error updating course:', error);
@@ -34,9 +58,13 @@ const courseService = {
     }
   },
 
-  deleteCourse: async (courseId) => {
+  deleteCourse: async (courseId, token) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/courses/${courseId}`);
+      const response = await axios.delete(`${BASE_URL}/courses/${courseId}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Error deleting course:', error);
@@ -44,15 +72,6 @@ const courseService = {
     }
   },
 
-  getCourseById: async (courseId) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/courses/${courseId}`);
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching course with ID ${courseId}:`, error);
-      throw new Error('Failed to fetch course');
-    }
-  },
 };
 
 export default courseService;

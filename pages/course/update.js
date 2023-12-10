@@ -1,21 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useRouter } from 'next/router';
-import courseService from '../services/courseService';
+import courseService from '@/services/courseService';
 import styles from '@/styles/add-course-styles.module.css';
+import { TOKEN } from '@/constants';
 
-const AddCourse = () => {
-  const [course, setCourse] = useState({ title: '', description: '' });
-  const router = useRouter();
+const Update = () => {
+    const [course, setCourse] = useState({});
+    const router = useRouter();
+
+  useEffect(() => {
+
+    async function fetchCourse() {
+      try {
+        const oldCourse = await courseService.getAllCourses(TOKEN);
+        const firstCourse = oldCourse[0]; // Get the 0th element
+                
+        setCourse({
+          id: firstCourse.id,
+          title: firstCourse.title,
+          description: firstCourse.description,
+        });
+            } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    }
+
+    fetchCourse();
+    console.log("course");
+    console.log(course);
+  }, []);
 
   const handleInputChange = (e) => {
     setCourse({ ...course, [e.target.name]: e.target.value });
   };
-
+  
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      await courseService.addCourse(course);
-      router.push('/courses'); // Redirect to the "All Courses" page after adding the course
+      await courseService.updateCourse(course, TOKEN);
+      router.push('/courses'); 
     } catch (error) {
       console.error('Error adding course:', error);
     }
@@ -23,11 +46,13 @@ const AddCourse = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.heading}>Add Course</h1>
+      <h1 className={styles.heading}>Update Course</h1>
       <form className={styles.form} onSubmit={handleFormSubmit}>
         <label className={styles.label} htmlFor="title">
           Course Title:
         </label>
+
+<div>        {course.id}</div>
         <input
           type="text"
           id="title"
@@ -37,7 +62,7 @@ const AddCourse = () => {
           className={styles.inputField}
           required
         />
-        
+
         <label className={styles.label} htmlFor="description">
           Description:
         </label>
@@ -50,12 +75,12 @@ const AddCourse = () => {
           required
         />
 
-        <button type="submit" className={styles.submitButton}>
-          Add Course
+        <button type="submit" className={styles.submitButton} style={{ background: 'green' }}>
+          Update Course
         </button>
       </form>
     </div>
   );
 };
 
-export default AddCourse;
+export default Update;
